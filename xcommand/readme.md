@@ -29,6 +29,12 @@ XCommands in TOTVS are preprocessor directives that expand into native Protheus/
 11. [Parameter Validation](#parameter-validation)
 12. [Function Declaration Shortcuts](#function-declaration-shortcuts)
 13. [Debugging Utilities](#debugging-utilities)
+14. [Microsoft Office Integration](#microsoft-office-integration)
+15. [Graphics and Charts](#graphics-and-charts)
+16. [TLPP Framework Extensions](#tlpp-framework-extensions)
+17. [Advanced UI Components](#advanced-ui-components)
+18. [Connection Management](#connection-management)
+19. [System Constants and Definitions](#system-constants-and-definitions)
 
 ---
 
@@ -621,7 +627,7 @@ CLOSETRANSACTION LOCKIN <alias_list>
 CREATE <xml_obj> XMLSTRING <xml_string> 
     [ONLYFIRSTNODE] 
     [SETASARRAY <array_list>] 
-    [OPTIONAL <optional_list>]
+    [OPTIONAL <optional_list>"
 
 CREATE <xml_obj> XMLFILE <xml_file> 
     [ONLYFIRSTNODE] 
@@ -810,6 +816,302 @@ ACTIVATE MSDIALOG oDlg CENTERED
 
 ---
 
+## Microsoft Office Integration
+
+**Source:** `decompressed_msexcel.ch.txt`, `decompressed_msproject.ch.txt`, `decompressed_msole.ch.txt`
+
+### Excel Integration
+
+#### Excel Object Management
+```advpl
+// Excel application constants
+#define MSEXCEL_NEW         1
+#define MSEXCEL_DESTROY     2
+```
+#### Excel Caption and Property Management
+```advpl
+// Caption manipulation
+:Caption => :GetCaption()
+:Caption := <value> => :SetCaption(<value>)
+
+// Visibility control
+:Visible => :GetVisible()
+:Visible := <value> => :SetVisible(<value>)
+```
+**Purpose:** Simplified property access for Excel objects.
+
+### Microsoft Project Integration
+
+#### Project Management
+```advpl
+// Project constants
+#define MSPROJECT_NEW       0001
+#define MSPROJECT_DESTROY   0002
+
+// Project navigation
+ActiveProject:<property> => _GetPjApp():Projects():<property>
+```
+**Purpose:** Integration with Microsoft Project for project management.
+
+#### Task and Resource Management
+```advpl
+// Task operations
+#define _TASK_GETFIELD      4001
+#define _TASK_SETFIELD      4002
+
+// Resource operations  
+#define _RESOURCE_GETFIELD  6001
+#define _RESOURCE_SETFIELD  6002
+```
+**Purpose:** Manage project tasks and resources.
+
+### OLE Integration
+
+#### OLE Container
+```advpl
+@ <row>,<col> OLECONTAINER [<ole_obj>]
+    SIZE <width>,<height>
+    OF <parent>
+```
+**Purpose:** Embed OLE objects in applications.
+
+#### OLE Constants
+```advpl
+#define oleOnError      "101"
+#define oleWdLeft       "201"
+#define oleWdTop        "202"
+#define oleWdWidth      "203"
+#define oleWdHeight     "204"
+#define oleWdCaption    "205"
+#define oleWdVisible    "206"
+```
+**Purpose:** OLE object property management.
+
+---
+
+## Graphics and Charts
+
+**Source:** `decompressed_msgraphi.ch.txt`, `decompressed_jpeg.ch.txt`
+
+### Chart Types
+```advpl
+#define GRP_LINE        1   // Line chart
+#define GRP_AREA        2   // Area chart
+#define GRP_POINT       3   // Point chart
+#define GRP_BAR         4   // Bar chart
+#define GRP_PYRAMID     5   // Pyramid chart
+#define GRP_CILINDER    6   // Cylinder chart
+#define GRP_HBAR        7   // Horizontal bar
+#define GRP_HPYRAMID    8   // Horizontal pyramid
+```
+**Purpose:** Define chart types for graphical components.
+
+### JPEG Image Display
+```advpl
+@ <row>,<col> JPEG [<jpeg_obj>]
+    [NAME <resource_name>]
+    [FILE <filename>]
+```
+**Purpose:** Display JPEG images in applications.
+
+---
+
+## TLPP Framework Extensions
+
+**Source:** `decompressed_tlpp-*.th.txt`
+
+### TLPP Core Features
+```advpl
+#include "tlpp-object.th"
+#include "tlpp-rest.th"
+```
+**Purpose:** Core TLPP (TOTVS Language Plus Plus) functionality.
+
+### REST Annotations
+```advpl
+@annotation Get
+@end
+
+@annotation Put  
+@end
+
+@annotation Patch
+@end
+
+@annotation Post
+@end
+
+@annotation Delete
+@end
+```
+**Purpose:** REST API method annotations for TLPP.
+
+### Component Documentation
+```advpl
+TLPP COMPONENT <name> <property> <type> <example>
+@annotation t1p9_c0mp0n3n7
+    property as char default ""
+@end
+```
+**Purpose:** Document TLPP components with metadata.
+
+### Internationalization
+```advpl
+// Idiom definition arrays
+static _aDefinedIdiom := {} as Array
+```
+**Purpose:** Support for internationalization in TLPP.
+
+### Framework Model Events
+```advpl
+@annotation beforeList
+@end
+
+@annotation onList  
+@end
+
+@annotation afterList
+@end
+
+@annotation beforeGetOne
+@end
+```
+**Purpose:** Model lifecycle event handlers.
+
+---
+
+## Advanced UI Components
+
+**Source:** `decompressed_scrollbx.ch.txt`, `decompressed_panelonline.ch.txt`
+
+### ScrollBox Component
+```advpl
+@ <top>,<left> SCROLLBOX [<scrollbox_obj>]
+    SIZE <height>,<width>
+    OF <parent>
+```
+**Purpose:** Create scrollable container components.
+
+### Panel Online Components
+```advpl
+DEFINE PANELONLINE <panel_obj>
+=> <panel_obj> := TPanelOnLine():New()
+
+PANELONLINE <panel_obj> ADDPANEL
+    [NAME <id>]
+    [TITLE <title>]
+    [DESCR <description>]
+    [TYPE <type>]
+    [PARAMETERS <params>]
+    [ONLOAD <process>]
+
+ACTIVATE PANELONLINE <panel_obj>
+```
+**Purpose:** Create dynamic online panel components.
+
+### Menu Management
+```advpl
+MENU [<menu_obj>]
+
+MENUITEM [<menuitem_obj> PROMPT] [<caption>]
+
+MRU <mru_obj>
+
+SEPARATOR [<menuitem_obj>] => [<menuitem_obj>:=] MenuAddItem()
+
+ENDMENU => MenuEnd()
+
+DEFINE MENU <menu_obj>
+```
+**Purpose:** Menu and menu item creation.
+
+---
+
+## Connection Management
+
+**Source:** `decompressed_tbiconn.ch.txt`, `decompressed_topconn.ch.txt`
+
+### Remote Connection Management
+```advpl
+CREATE RPCCONN <server_obj>
+    SERVER <server_name>
+    [PORT <port>]
+    [ENVIRONMENT <env>]
+    [USER <user>]
+    [PASSWORD <password>]
+
+CLOSE RPCCONN <server_obj>
+
+PREPARE ENVIRONMENT [IN SERVER <server_obj>]
+    [COMPANY <company>]
+    [BRANCH <branch>]
+    [MODULE <module>]
+    [USER <user>]
+    [TABLES <tables>]
+
+RESET ENVIRONMENT [IN SERVER <server_obj>]
+```
+**Purpose:** Manage remote server connections and environments.
+
+### Database Query Operations
+```advpl
+TCQUERY <sql_expression>
+    [ALIAS <alias>]
+    [NEW]
+    [VIA <connection>]
+```
+**Purpose:** Execute SQL queries using TopConnect.
+
+---
+
+## System Constants and Definitions
+
+**Source:** Various `.ch` files
+
+### Color Constants
+```advpl
+#define CLR_SCROLLBAR       -2147483648
+#define CLR_BACKGROUND      -2147483647
+```
+**Purpose:** System color definitions.
+
+### Print Constants
+```advpl
+#define DMPAPER_LETTER      1    // Letter 8.5 x 11 in
+#define DMPAPER_LEGAL       5    // Legal 8.5 x 14 in
+#define DMPAPER_TABLOID     3    // Tabloid 11 x 17 in
+```
+**Purpose:** Paper size constants for printing.
+
+### Virtual Key Codes
+```advpl
+#define VK_LBUTTON          1    // Left mouse button
+#define VK_RBUTTON          2    // Right mouse button
+#define VK_CANCEL           3    // Cancel key
+#define VK_BACK             8    // Backspace key
+```
+**Purpose:** Virtual key code definitions.
+
+### Shell Window States
+```advpl
+#define SW_HIDE             0    // Hide window
+#define SW_SHOWNORMAL       1    // Show normal
+#define SW_SHOWMINIMIZED    2    // Show minimized
+#define SW_SHOWMAXIMIZED    3    // Show maximized
+```
+**Purpose:** Window display state constants.
+
+### Serial Communication
+```advpl
+#define pnCOM1              1    // COM port 1
+#define pnCOM2              2    // COM port 2
+#define pnCOM3              3    // COM port 3
+#define pnCOM4              4    // COM port 4
+```
+**Purpose:** Serial port communication constants.
+
+---
+
 ## Best Practices
 
 1. **Error Handling**: Always check RESULT parameters when available
@@ -837,5 +1139,24 @@ ACTIVATE MSDIALOG oDlg CENTERED
 - **topconn.ch** - Database connectivity
 - **tbiconn.ch** - Remote connections
 - **parmtype.ch** - Parameter validation
+- **msexcel.ch** - Microsoft Excel integration
+- **msproject.ch** - Microsoft Project integration
+- **msole.ch** - OLE object integration
+- **msgraphi.ch** - Graphics and chart components
+- **jpeg.ch** - JPEG image display
+- **tlpp-*.th** - TLPP framework extensions
+- **scrollbx.ch** - ScrollBox UI components
+- **panelonline.ch** - Online panel components
+- **ptmenu.ch** - Menu management
+- **mscolors.ch** - System color definitions
+- **rptdef.ch** - Print and report definitions
+- **vkey.ch** - Virtual key codes
+- **shell.ch** - Shell and window management
+- **msserial.ch** - Serial communication
+- **set.ch** - System settings and constants
+- **winapi.ch** - Windows API constants
+- **ole.ch** - OLE integration constants
+- **tcbrowse.ch** - Browse component definitions
+- **stdwin.ch** - Standard window definitions
 
 This documentation covers the major xcommand macros found in the TOTVS framework include files. Each xcommand provides simplified syntax for complex operations and follows consistent patterns for optional parameters and result handling.
