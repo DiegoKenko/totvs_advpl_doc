@@ -25,45 +25,41 @@ TLPP Header files (.th) contain:
 7. [Probat System](#probat-system)
 8. [Authentication & Authorization](#authentication--authorization)
 
-# TLPP - Estrutura, Tipos, Modificadores e Recursos
 
-Documentação priorizando informações oficiais TOTVS TLPP:
+# TLPP - Structure, Types, Modifiers and Features
 
-## Índice
+Documentation prioritizing official TOTVS TLPP information:
 
-1. Estrutura de Classe TLPP
-2. Modificadores de Acesso
-3. Tipagem de Propriedades e Tipos Nativos
+## Index
+
+1. TLPP Class Structure
+2. Access Modifiers
+3. Property Typing and Native Types
 4. Interfaces
-5. Sobrecarga de Operadores
-6. Chamando Construtor da Classe Pai
-7. Exemplos Práticos
+5. Operator Overloading
+6. Calling Parent Class Constructor
+7. Practical Examples
 
 ---
 
-## 1. Estrutura de Classe TLPP
-
-Para criar uma classe TLPP, recomenda-se incluir o cabeçalho `tlpp-core.th`:
+## 1. TLPP Class Structure
 
 ```tlpp
 #include "tlpp-core.th"
 
 Class MyClass
-
+EndClass
 ```
 
-### Propriedades e Métodos
+### Properties and Methods
 
 ```tlpp
 Class MyClass
-### Advanced Data Members
-
-#### Variable Declaration with Scope
-```tlpp
-    VAR cProperty AS Character PUBLIC DEFAULT ""
-    VAR nValue AS Numeric  
-    DATA lFlag AS Logical 
-    DATA oObject AS Object 
+    PUBLIC DATA cProperty AS Character 
+    PUBLIC DATA nValue AS Numeric  
+    PUBLIC DATA lFlag AS Logical 
+    PUBLIC DATA oObject AS Object 
+EndClass
 ```
 
 ---
@@ -80,29 +76,10 @@ TLPP permite definir escopos para propriedades e métodos:
 
 Se não informado, o padrão é PRIVATE.
 
-Exemplo:
-```tlpp
-Class EscopeMethod
-    INSTVAR aList AS Array 
-    VAR aList1 AS Array 
-```
-
-### Enhanced Default Values
-
-#### BYNAME Assignment
-```tlpp
-BYNAME cName, nAge, lActive
-```
 
 ---
 
 ## 3. Tipagem de Propriedades e Tipos Nativos
-
-Declaração básica:
-```tlpp
-private data nVar as Numeric
-public data cVar as Character
-```
 
 ### Tipos Nativos TLPP
 
@@ -130,149 +107,18 @@ Obs: Se não tipar, será tratado como variant.
 Interfaces definem apenas protótipos de métodos. Classes podem implementar uma ou mais interfaces:
 
 ```tlpp
-Interface ITeste
-BYNAME cEmail DEFAULT "default@email.com"
-BYNAME oObject IFNONIL
-
 Class MyTest implements ITeste
-```
+
+EndClass
 
 ```
 
 Múltiplas interfaces:
 ```tlpp
-Interface I1
-#### BYDEFAULT Function
-```tlpp
-Interface I2
-cValue := BYDEFAULT cParameter, "default_value"
-```
+
 Class MyTest2 implements I1, I2
 
----
-
-```
-
----
-
-## 5. Sobrecarga de Operadores
-
-TLPP permite sobrecarregar operadores para objetos:
-
-```tlpp
-Class ComplexNumber
-## REST API Annotations
-
-**Source:** `tlpp-rest.th`, `fw-tlpp-rest.th`
-
-
----
-
-## Framework Integration
-
-**Source:** `fw-tlpp-*.th`
-
-```
-
-Exemplo de uso:
-```tlpp
-Local obj := ComplexNumber():Create(1,2)
-Local obj2 := ComplexNumber():Create(3,4)
-Local objRet := obj + obj2
-Conout(objRet)
-```
-
----
-
-## 6. Chamando Construtor da Classe Pai
-
-Para chamar o construtor da classe pai:
-
-- Se pai for TLPP/AdvPL: `_Super:New()`
-- Se pai for binário: `:New()`
-
-Exemplo TLPP:
-```tlpp
-method New(x as numeric, y as numeric, r as numeric) class Circle
-### Framework Object Extensions
-```tlpp
-CLASS MyFrameworkClass INHERIT FROM FWClass
-```
-
-Exemplo binário:
-```tlpp
-Class MyQueue From tAmqp
-    DATA cVersion AS Character DEFAULT "1.0"
-    
-Method New() class MyQueue
-    METHOD Initialize() CONSTRUCTOR
-    METHOD Process() AS Logical
-```
-
----
-
-## 7. Exemplos Práticos
-
-### Classe Completa
-```tlpp
-#include "tlpp-core.th"
-Class MyClass
-ENDCLASS
-```
-
-### Framework REST Integration
-```tlpp
-CLASS MyRestService INHERIT FROM FWRestService
-    @Get(endpoint="/endpoint/get")
-    @Post(endpoint="/endpoint/post")
-
-Method New() class MyClass
-    METHOD GetStatus() AS Object
-ENDCLASS
-```
-
-Method getNumber() class MyClass
-
-
-Method getText() class MyClass
-### HTTP Method Annotations
-
-Method setNumber(n) class MyClass
-
-#### @Get Annotation
-
-Method setText(c) class MyClass
-```tlpp
-@Get(endpoint="/api/customers/:id", 
-```
-
-### Interface e Implementação
-```tlpp
-Interface ICalc
-     description="Get customer by ID",
-     title="Customer Details",
-
-Class Calc implements ICalc
-     params="id:path:Customer ID",
-     responses="200:Customer object")
-
-Method Somar(a, b) class Calc
-METHOD GetCustomer(cId AS Character) AS Object
-```
-
-### Sobrecarga de Operador
-```tlpp
-Class ComplexNumber
-```
-
-#### @Post Annotation
-```tlpp
-
-Operator Add(parm1) class ComplexNumber
-@Post(endpoint="/api/customers",
-      description="Create new customer",
-      requestBody="Customer object",
-      responses="201:Created customer")
+EndClass
 ```
 
 ---
@@ -288,53 +134,10 @@ Operator Add(parm1) class ComplexNumber
 - [Chamando construtor da classe pai](https://tdn.totvs.com/display/tec/Chamando+construtor+da+classe+pai)
 
 ---
-METHOD CreateCustomer(oCustomer AS Object) AS Object
-```
-
-#### @Put Annotation
-```tlpp
-@Put(endpoint="/api/customers/:id",
-     description="Update customer",
-     params="id:path:Customer ID",
-     requestBody="Customer object")
-METHOD UpdateCustomer(cId AS Character, oCustomer AS Object) AS Object
-```
-
-#### @Delete Annotation
-```tlpp
-@Delete(endpoint="/api/customers/:id",
-        description="Delete customer",
-        params="id:path:Customer ID",
-        responses="204:No content")
-METHOD DeleteCustomer(cId AS Character) AS Logical
-```
-
-#### @Patch Annotation
-```tlpp
-@Patch(endpoint="/api/customers/:id",
-       description="Partial customer update",
-       params="id:path:Customer ID",
-       requestBody="Partial customer object")
-METHOD PatchCustomer(cId AS Character, oData AS Object) AS Object
-```
-
-#### Annotation Properties
-
-```
-- **endpoint** - API endpoint URL pattern
-- **description** - Method description for documentation
-- **title** - Display title for the endpoint
-- **params** - Parameter definitions (format: "name:type:description")
-- **requestBody** - Request body schema description
-- **responses** - Response codes and descriptions
-- **id** - Numeric identifier for the endpoint
-- **language** - Language code (default: "BRA")
-```
----
 
 ## Internationalization
 
-**Source:** `tlpp-i18n.th`, `fw-tlpp-i18n.th`
+**Includes:** `tlpp-i18n.th`, `fw-tlpp-i18n.th`
 
 ### I18N Support
 
@@ -554,7 +357,7 @@ ENDCLASS
 
 ---
 
-## File Reference Index
+## Includes Reference Index
 
 - **tlpp-core.th** - Main TLPP framework includes
 - **tlpp-object.th** - Enhanced object-oriented programming
