@@ -24,53 +24,38 @@ TLPP Header files (.th) contain:
 6. [Internationalization](#internationalization)
 7. [Probat System](#probat-system)
 8. [Authentication & Authorization](#authentication--authorization)
-9. [Environment Management](#environment-management)
-10. [Best Practices](#best-practices)
+
+# TLPP - Estrutura, Tipos, Modificadores e Recursos
+
+Documentação priorizando informações oficiais TOTVS TLPP:
+
+## Índice
+
+1. Estrutura de Classe TLPP
+2. Modificadores de Acesso
+3. Tipagem de Propriedades e Tipos Nativos
+4. Interfaces
+5. Sobrecarga de Operadores
+6. Chamando Construtor da Classe Pai
+7. Exemplos Práticos
 
 ---
 
-## Core TLPP Features
+## 1. Estrutura de Classe TLPP
 
-**Source:** `tlpp-core.th`, `fw-tlpp-core.th`
+Para criar uma classe TLPP, recomenda-se incluir o cabeçalho `tlpp-core.th`:
 
-### Main TLPP Core Includes
 ```tlpp
-#include "tlpp-object.th"
-#include "tlpp-rest.th"
+#include "tlpp-core.th"
+
+Class MyClass
+
 ```
 
-**Purpose:** Central header that includes TLPP framework components.
+### Propriedades e Métodos
 
----
-
-## Object-Oriented Programming
-
-**Source:** `tlpp-object.th`, `fw-tlpp-object.th`
-
-### Enhanced Class Definition
-
-#### CLASS with Inheritance and Interfaces
 ```tlpp
-CLASS MyClass INHERIT FROM BaseClass IMPLEMENTS IInterface  
-ENDCLASS
-```
-
-#### CLASS with Multiple Interfaces
-```tlpp
-CLASS MyClass 
-    INHERIT FROM BaseClass 
-    IMPLEMENTS IInterface1, IInterface2, IInterface3
-ENDCLASS
-```
-
-#### INTERFACE Definition
-```tlpp
-INTERFACE IMyInterface
-    METHOD DoSomething()
-    METHOD GetValue() AS Numeric
-ENDINTERFACE
-```
-
+Class MyClass
 ### Advanced Data Members
 
 #### Variable Declaration with Scope
@@ -79,6 +64,25 @@ ENDINTERFACE
     VAR nValue AS Numeric  
     DATA lFlag AS Logical 
     DATA oObject AS Object 
+```
+
+---
+
+## 2. Modificadores de Acesso
+
+TLPP permite definir escopos para propriedades e métodos:
+
+| Modificador | Descrição |
+|---|---|
+| PRIVATE | Acesso apenas dentro da classe |
+| PROTECTED | Acesso dentro da classe e das herdeiras |
+| PUBLIC | Acesso de qualquer lugar |
+
+Se não informado, o padrão é PRIVATE.
+
+Exemplo:
+```tlpp
+Class EscopeMethod
     INSTVAR aList AS Array 
     VAR aList1 AS Array 
 ```
@@ -88,17 +92,75 @@ ENDINTERFACE
 #### BYNAME Assignment
 ```tlpp
 BYNAME cName, nAge, lActive
-BYNAME cEmail DEFAULT "default@email.com"
-BYNAME oObject IFNONIL
-```
-
-#### BYDEFAULT Function
-```tlpp
-cValue := BYDEFAULT cParameter, "default_value"
 ```
 
 ---
 
+## 3. Tipagem de Propriedades e Tipos Nativos
+
+Declaração básica:
+```tlpp
+private data nVar as Numeric
+public data cVar as Character
+```
+
+### Tipos Nativos TLPP
+
+| Tipo      | Descrição                      | Exemplo |
+|-----------|-------------------------------|---------|
+| numeric   | Ponto flutuante                | data n as numeric |
+| integer   | Inteiro                        | data i as integer |
+| double    | Ponto flutuante                | data d as double |
+| decimal   | Alta precisão (monetário)      | data f as decimal |
+| character | Texto                          | data c as character |
+| logical   | Booleano (.T./.F.)             | data l as logical |
+| date      | Data                           | data d as date |
+| array     | Matriz                         | data a as array |
+| object    | Objeto                         | data o as object |
+| json      | JSON                           | data j as json |
+| codeblock | Bloco de código                | data b as codeblock |
+| variant   | Tipo variante                  | data x as variant |
+
+Obs: Se não tipar, será tratado como variant.
+
+---
+
+## 4. Interfaces
+
+Interfaces definem apenas protótipos de métodos. Classes podem implementar uma ou mais interfaces:
+
+```tlpp
+Interface ITeste
+BYNAME cEmail DEFAULT "default@email.com"
+BYNAME oObject IFNONIL
+
+Class MyTest implements ITeste
+```
+
+```
+
+Múltiplas interfaces:
+```tlpp
+Interface I1
+#### BYDEFAULT Function
+```tlpp
+Interface I2
+cValue := BYDEFAULT cParameter, "default_value"
+```
+Class MyTest2 implements I1, I2
+
+---
+
+```
+
+---
+
+## 5. Sobrecarga de Operadores
+
+TLPP permite sobrecarregar operadores para objetos:
+
+```tlpp
+Class ComplexNumber
 ## REST API Annotations
 
 **Source:** `tlpp-rest.th`, `fw-tlpp-rest.th`
@@ -110,13 +172,51 @@ cValue := BYDEFAULT cParameter, "default_value"
 
 **Source:** `fw-tlpp-*.th`
 
+```
+
+Exemplo de uso:
+```tlpp
+Local obj := ComplexNumber():Create(1,2)
+Local obj2 := ComplexNumber():Create(3,4)
+Local objRet := obj + obj2
+Conout(objRet)
+```
+
+---
+
+## 6. Chamando Construtor da Classe Pai
+
+Para chamar o construtor da classe pai:
+
+- Se pai for TLPP/AdvPL: `_Super:New()`
+- Se pai for binário: `:New()`
+
+Exemplo TLPP:
+```tlpp
+method New(x as numeric, y as numeric, r as numeric) class Circle
 ### Framework Object Extensions
 ```tlpp
 CLASS MyFrameworkClass INHERIT FROM FWClass
+```
+
+Exemplo binário:
+```tlpp
+Class MyQueue From tAmqp
     DATA cVersion AS Character DEFAULT "1.0"
     
+Method New() class MyQueue
     METHOD Initialize() CONSTRUCTOR
     METHOD Process() AS Logical
+```
+
+---
+
+## 7. Exemplos Práticos
+
+### Classe Completa
+```tlpp
+#include "tlpp-core.th"
+Class MyClass
 ENDCLASS
 ```
 
@@ -125,28 +225,69 @@ ENDCLASS
 CLASS MyRestService INHERIT FROM FWRestService
     @Get(endpoint="/endpoint/get")
     @Post(endpoint="/endpoint/post")
+
+Method New() class MyClass
     METHOD GetStatus() AS Object
 ENDCLASS
 ```
 
+Method getNumber() class MyClass
+
+
+Method getText() class MyClass
 ### HTTP Method Annotations
 
+Method setNumber(n) class MyClass
+
 #### @Get Annotation
+
+Method setText(c) class MyClass
 ```tlpp
 @Get(endpoint="/api/customers/:id", 
+```
+
+### Interface e Implementação
+```tlpp
+Interface ICalc
      description="Get customer by ID",
      title="Customer Details",
+
+Class Calc implements ICalc
      params="id:path:Customer ID",
      responses="200:Customer object")
+
+Method Somar(a, b) class Calc
 METHOD GetCustomer(cId AS Character) AS Object
+```
+
+### Sobrecarga de Operador
+```tlpp
+Class ComplexNumber
 ```
 
 #### @Post Annotation
 ```tlpp
+
+Operator Add(parm1) class ComplexNumber
 @Post(endpoint="/api/customers",
       description="Create new customer",
       requestBody="Customer object",
       responses="201:Created customer")
+```
+
+---
+
+## Referências Oficiais
+
+- [Estrutura TLPP](https://tdn.totvs.com/display/tec/Estrutura)
+- [Modificadores de Acesso](https://tdn.totvs.com/display/tec/Modificadores+de+Acesso)
+- [Tipando Propriedades](https://tdn.totvs.com/display/tec/Tipando+Propriedades)
+- [Tipos Nativos](https://tdn.totvs.com/display/tec/Tipos+Nativos)
+- [Interface](https://tdn.totvs.com/display/tec/Interface)
+- [Sobrecarga de Operadores](https://tdn.totvs.com/display/tec/Sobrecarga+de+Operadores)
+- [Chamando construtor da classe pai](https://tdn.totvs.com/display/tec/Chamando+construtor+da+classe+pai)
+
+---
 METHOD CreateCustomer(oCustomer AS Object) AS Object
 ```
 
