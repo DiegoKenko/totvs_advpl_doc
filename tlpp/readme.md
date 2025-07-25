@@ -172,15 +172,18 @@ cError := GetI18NText("error.validation", "pt")
       group="CustomerTests",
       timeout=5000)
 METHOD TestCreateCustomer() AS Logical
+return
 ```
 
 #### @TestSetup and @TestTeardown
 ```tlpp
 @TestSetup
 METHOD SetupTest() AS Nil
+return
 
 @TestTeardown  
 METHOD CleanupTest() AS Nil
+return
 ```
 
 #### Test Assertions
@@ -210,6 +213,7 @@ RETURN .T.
       clientId="app-client-id",
       scopes={"read", "write", "admin"})
 CLASS SecureService
+endclass
 ```
 
 #### Method Security
@@ -217,6 +221,7 @@ CLASS SecureService
 @RequireAuth(scopes={"admin"})
 @Delete(endpoint="/api/admin/users/:id")
 METHOD DeleteUser(cUserId AS Character) AS Logical
+return
 ```
 
 ---
@@ -234,6 +239,7 @@ METHOD DeleteUser(cUserId AS Character) AS Logical
 @Environment(type="DEVELOPMENT",
              config="dev-config.json")
 CLASS ConfigurableService
+endclass
 ```
 
 #### Conditional Compilation
@@ -243,7 +249,6 @@ CLASS ConfigurableService
 #else
     @Log(level="DEBUG")
 #endif
-METHOD ProcessData() AS Logical
 ```
 
 ---
@@ -282,25 +287,26 @@ ENDINTERFACE
 
 CLASS CustomerAPI INHERIT FROM FWRestService
 
-    @Get(endpoint="/", description="List all customers")
-    METHOD ListCustomers() AS Array
-        Local aCustomers := {}
-        // Implementation
-    RETURN aCustomers
-
-    @Post(endpoint="/", description="Create customer")
-    METHOD CreateCustomer(oCustomer AS Object) AS Object
-        Local oResult := {}
-        // Validation and creation logic
-    RETURN oResult
-
-    @Get(endpoint="/:id", description="Get customer by ID")
-    METHOD GetCustomer(cId AS Character) AS Object
-        Local oCustomer := {}
-        // Fetch customer logic
-    RETURN oCustomer
 
 ENDCLASS
+
+@Get(endpoint="/", description="List all customers")
+METHOD ListCustomers() AS Array class CustomerAPI
+    Local aCustomers := {}
+    // Implementation
+RETURN aCustomers
+
+@Post(endpoint="/", description="Create customer")
+METHOD CreateCustomer(oCustomer AS Object) AS Object class CustomerAPI
+    Local oResult := {}
+    // Validation and creation logic
+RETURN oResult
+
+@Get(endpoint="/:id", description="Get customer by ID")
+METHOD GetCustomer(cId AS Character) AS Object class CustomerAPI
+    Local oCustomer := {}
+    // Fetch customer logic
+RETURN oCustomer
 ```
 
 ### Advanced OOP Example
@@ -316,43 +322,43 @@ CLASS CustomerService IMPLEMENTS ICustomerService
     DATA oRepository AS Object 
     DATA oValidator AS Object 
     
-    METHOD New() CONSTRUCTOR
-        ::oRepository := CustomerRepository():New()
-        ::oValidator := CustomerValidator():New()
-    RETURN Self
-    
-    METHOD Create(oCustomer AS Object) AS Object
-        Local oResult := {}
-        
-        If ::oValidator:Validate(oCustomer)
-            oResult := ::oRepository:Save(oCustomer)
-        Else
-            oResult:lError := .T.
-            oResult:cMessage := "Validation failed"
-        EndIf
-        
-    RETURN oResult
-
-    METHOD Delete(cId AS Character) AS Logical
-        Local lSuccess := .F.
-        
-        If !Empty(cId)
-            lSuccess := ::oRepository:Delete(cId)
-        EndIf
-    RETURN
-
-    METHOD Update(cId AS Character, oCustomer AS Object) AS Object
-        Local oResult := {}
-        
-        If ::oValidator:Validate(oCustomer)
-            oResult := ::oRepository:Update(cId, oCustomer)
-        Else
-            oResult:lError := .T.
-            oResult:cMessage := "Validation failed"
-        EndIf
-    RETURN
-
 ENDCLASS
+
+METHOD New() CONSTRUCTOR class CustomerService
+    ::oRepository := CustomerRepository():New()
+    ::oValidator := CustomerValidator():New()
+RETURN Self
+
+METHOD Create(oCustomer AS Object) AS Object class CustomerService
+    Local oResult := {}
+    
+    If ::oValidator:Validate(oCustomer)
+        oResult := ::oRepository:Save(oCustomer)
+    Else
+        oResult:lError := .T.
+        oResult:cMessage := "Validation failed"
+    EndIf
+    
+RETURN oResult
+
+METHOD Delete(cId AS Character) AS Logical class CustomerService
+    Local lSuccess := .F.
+    
+    If !Empty(cId)
+        lSuccess := ::oRepository:Delete(cId)
+    EndIf
+RETURN
+
+METHOD Update(cId AS Character, oCustomer AS Object) AS Object  class CustomerService
+    Local oResult := {}
+    
+    If ::oValidator:Validate(oCustomer)
+        oResult := ::oRepository:Update(cId, oCustomer)
+    Else
+        oResult:lError := .T.
+        oResult:cMessage := "Validation failed"
+    EndIf
+RETURN
 ```
 
 ---
